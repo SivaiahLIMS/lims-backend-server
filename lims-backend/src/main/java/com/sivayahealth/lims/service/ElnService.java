@@ -26,7 +26,7 @@ public class ElnService {
 
     public ElnEntry getEntry(Long id) {
         return elnEntryRepository.findById(id)
-                .orElseThrow(() -> new LimsException("ELN entry not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("ELN entry not found: " + id));
     }
 
     @Transactional

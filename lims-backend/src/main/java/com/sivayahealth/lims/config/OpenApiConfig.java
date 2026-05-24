@@ -7,23 +7,17 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-<<<<<<< HEAD
-=======
 import org.springframework.web.client.RestClient;
->>>>>>> origin/main
 
 @Configuration
 public class OpenApiConfig {
 
     @Bean
-<<<<<<< HEAD
-=======
     public RestClient restClient() {
         return RestClient.create();
     }
 
     @Bean
->>>>>>> origin/main
     public OpenAPI limsOpenAPI() {
         return new OpenAPI()
                 .info(new Info()

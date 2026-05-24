@@ -40,7 +40,7 @@ public class CalibrationController {
     @Operation(summary = "Get calibration task by ID")
     public CalibrationTask getCalibration(@PathVariable Long id) {
         return calibrationTaskRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Calibration task not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Calibration task not found: " + id));
     }
 
     @PostMapping
@@ -54,7 +54,7 @@ public class CalibrationController {
         Long limitSetId = body.containsKey("limitSetId") ? Long.valueOf(body.get("limitSetId").toString()) : null;
 
         InstrumentMaster instrument = instrumentMasterRepository.findById(instrumentId)
-                .orElseThrow(() -> new LimsException("Instrument not found: " + instrumentId));
+                .orElseThrow(() -> LimsException.notFound("Instrument not found: " + instrumentId));
         AppUser createdBy = createdById != null ? appUserRepository.findById(createdById).orElse(null) : null;
         InstrumentCalibrationLimitSet limitSet = limitSetId != null
                 ? calibrationLimitSetRepository.findById(limitSetId).orElse(null) : null;
@@ -84,7 +84,7 @@ public class CalibrationController {
             @RequestHeader("X-Branch-Id") Long branchId,
             @RequestBody Map<String, Object> body) {
         CalibrationTask task = calibrationTaskRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Calibration task not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Calibration task not found: " + id));
 
         Long userId = body.containsKey("userId") ? Long.valueOf(body.get("userId").toString()) : null;
         String readingJson = body.containsKey("readingJson") ? body.get("readingJson").toString() : "{}";

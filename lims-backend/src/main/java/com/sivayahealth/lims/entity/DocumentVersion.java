@@ -29,11 +29,6 @@ public class DocumentVersion {
     @Column(name = "lifecycle_state", nullable = false)
     private String lifecycleState = "DRAFT";
 
-<<<<<<< HEAD
-    @Column(name = "file_path")
-    private String filePath;
-
-=======
     // ── File storage ──────────────────────────────────────
     @Column(name = "original_filename")
     private String originalFilename;
@@ -50,7 +45,6 @@ public class DocumentVersion {
     private Long fileSizeBytes;
 
     // ── Upload audit ──────────────────────────────────────
->>>>>>> origin/main
     @Column(name = "uploaded_at", nullable = false)
     private LocalDateTime uploadedAt = LocalDateTime.now();
 
@@ -58,10 +52,7 @@ public class DocumentVersion {
     @JoinColumn(name = "uploaded_by")
     private AppUser uploadedBy;
 
-<<<<<<< HEAD
-=======
     // ── Review audit ──────────────────────────────────────
->>>>>>> origin/main
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewed_by")
     private AppUser reviewedBy;
@@ -72,10 +63,7 @@ public class DocumentVersion {
     @Column(name = "review_comment", columnDefinition = "TEXT")
     private String reviewComment;
 
-<<<<<<< HEAD
-=======
     // ── Approval audit ────────────────────────────────────
->>>>>>> origin/main
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by")
     private AppUser approvedBy;
@@ -83,10 +71,6 @@ public class DocumentVersion {
     @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-<<<<<<< HEAD
-    @Column(name = "published_at")
-    private LocalDateTime publishedAt;
-=======
     // ── Publish audit ─────────────────────────────────────
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
@@ -102,5 +86,4 @@ public class DocumentVersion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "retired_by")
     private AppUser retiredBy;
->>>>>>> origin/main
 }

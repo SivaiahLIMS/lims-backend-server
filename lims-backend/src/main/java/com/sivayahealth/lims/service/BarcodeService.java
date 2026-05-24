@@ -20,17 +20,17 @@ public class BarcodeService {
 
     public ChemicalContainer scanContainer(Long tenantId, String barcodeValue) {
         return chemicalContainerRepository.findByTenantIdAndBarcodeValue(tenantId, barcodeValue)
-                .orElseThrow(() -> new LimsException("No container found for barcode: " + barcodeValue));
+                .orElseThrow(() -> LimsException.notFound("No container found for barcode: " + barcodeValue));
     }
 
     public InstrumentMaster scanInstrument(Long tenantId, String barcodeValue) {
         return instrumentMasterRepository.findByTenant_IdAndBarcodeValue(tenantId, barcodeValue)
-                .orElseThrow(() -> new LimsException("No instrument found for barcode: " + barcodeValue));
+                .orElseThrow(() -> LimsException.notFound("No instrument found for barcode: " + barcodeValue));
     }
 
     public StorageLocation scanLocation(Long tenantId, Long branchId, String barcodeValue) {
         return storageLocationRepository.findByTenantIdAndBranchIdAndCode(tenantId, branchId, barcodeValue)
-                .orElseThrow(() -> new LimsException("No storage location found for barcode: " + barcodeValue));
+                .orElseThrow(() -> LimsException.notFound("No storage location found for barcode: " + barcodeValue));
     }
 
     public Map<String, Object> scanAny(Long tenantId, Long branchId, String barcodeValue) {
@@ -57,6 +57,6 @@ public class BarcodeService {
             return result;
         }
 
-        throw new LimsException("No entity found for barcode: " + barcodeValue);
+        throw LimsException.notFound("No entity found for barcode: " + barcodeValue);
     }
 }

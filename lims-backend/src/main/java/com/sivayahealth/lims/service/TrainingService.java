@@ -24,7 +24,7 @@ public class TrainingService {
 
     public TrainingMaterial getMaterial(Long id) {
         return trainingMaterialRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Training material not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Training material not found: " + id));
     }
 
     @Transactional
@@ -47,7 +47,7 @@ public class TrainingService {
     public UserTrainingRecord assignTraining(Long trainingId, Long userId, Long assignedById, Long tenantId, Long branchId) {
         TrainingMaterial training = getMaterial(trainingId);
         AppUser user = appUserRepository.findById(userId)
-                .orElseThrow(() -> new LimsException("User not found: " + userId));
+                .orElseThrow(() -> LimsException.notFound("User not found: " + userId));
         AppUser assignedBy = appUserRepository.findById(assignedById).orElse(null);
 
         UserTrainingRecord record = UserTrainingRecord.builder()
@@ -65,7 +65,7 @@ public class TrainingService {
     @Transactional
     public UserTrainingRecord completeTraining(Long recordId, Integer score, String remarks) {
         UserTrainingRecord record = userTrainingRecordRepository.findById(recordId)
-                .orElseThrow(() -> new LimsException("Training record not found: " + recordId));
+                .orElseThrow(() -> LimsException.notFound("Training record not found: " + recordId));
         record.setStatus("COMPLETED");
         record.setCompletedAt(LocalDateTime.now());
         record.setScore(score);
@@ -76,7 +76,7 @@ public class TrainingService {
     @Transactional
     public UserTrainingRecord approveTraining(Long recordId, Long approverId) {
         UserTrainingRecord record = userTrainingRecordRepository.findById(recordId)
-                .orElseThrow(() -> new LimsException("Training record not found: " + recordId));
+                .orElseThrow(() -> LimsException.notFound("Training record not found: " + recordId));
         AppUser approver = appUserRepository.findById(approverId).orElse(null);
         record.setStatus("APPROVED");
         record.setApprovedBy(approver);

@@ -134,7 +134,7 @@ public class InstrumentController {
             @RequestBody Map<String, Object> body,
             @AuthenticationPrincipal LimsUserDetails u) {
         InstrumentMaster instrument = instrumentMasterRepository.findById(instrumentId)
-                .orElseThrow(() -> new LimsException("Instrument not found: " + instrumentId));
+                .orElseThrow(() -> LimsException.notFound("Instrument not found: " + instrumentId));
         AppUser requestedBy = u.getUser();
         InstrumentReservation reservation = InstrumentReservation.builder()
                 .tenantId(u.getTenantId())
@@ -153,7 +153,7 @@ public class InstrumentController {
             @PathVariable Long id,
             @AuthenticationPrincipal LimsUserDetails u) {
         InstrumentReservation reservation = instrumentReservationRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Reservation not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Reservation not found: " + id));
         reservation.setStatus("APPROVED");
         reservation.setApprovedBy(u.getUser());
         reservation.setApprovedAt(LocalDateTime.now());
@@ -173,7 +173,7 @@ public class InstrumentController {
             @RequestBody InstrumentCalibrationLimitSet limitSet,
             @AuthenticationPrincipal LimsUserDetails u) {
         InstrumentMaster instrument = instrumentMasterRepository.findById(instrumentId)
-                .orElseThrow(() -> new LimsException("Instrument not found: " + instrumentId));
+                .orElseThrow(() -> LimsException.notFound("Instrument not found: " + instrumentId));
         calibrationLimitSetRepository.findByInstrument_IdAndActiveTrue(instrumentId).ifPresent(existing -> {
             existing.setActive(false);
             existing.setEffectiveTo(LocalDateTime.now());

@@ -122,8 +122,9 @@ public class DocxParserService {
                                     }
                                 }
                             }
+                            final ArrayNode sf = sectionFields;
                             extracted.forEach(f -> {
-                                if (sectionFields != null) sectionFields.add(objectMapper.valueToTree(f));
+                                if (sf != null) sf.add(objectMapper.valueToTree(f));
                             });
                         }
                     }
@@ -232,7 +233,7 @@ public class DocxParserService {
     }
 
     private Map<String, Object> fieldMap(String name, String label, String type,
-                                          boolean required, Object defaultValue, String section) {
+                                         boolean required, Object defaultValue, String section) {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("name",         name);
         m.put("label",        label);

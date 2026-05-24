@@ -116,11 +116,7 @@ public class DocumentController {
     public ResponseEntity<DocumentVersion> retire(
             @PathVariable Long id, @PathVariable int v,
             @AuthenticationPrincipal LimsUserDetails u) {
-<<<<<<< HEAD
-        return ResponseEntity.ok(documentService.retireVersion(id, v));
-=======
         return ResponseEntity.ok(documentService.retireVersion(id, v, u.getUser().getId()));
->>>>>>> origin/main
     }
 
     // ────────────────────────────────────────────

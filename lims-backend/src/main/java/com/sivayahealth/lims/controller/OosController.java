@@ -47,7 +47,7 @@ public class OosController {
             @RequestBody Map<String, Object> body) {
 
         DocumentTestResult result = documentTestResultRepository.findById(testResultId)
-                .orElseThrow(() -> new LimsException("Test result not found: " + testResultId));
+                .orElseThrow(() -> LimsException.notFound("Test result not found: " + testResultId));
 
         Long assigneeId = body.containsKey("assigneeId") ? Long.valueOf(body.get("assigneeId").toString()) : null;
         String description = body.containsKey("description") ? body.get("description").toString() : "OOS Investigation";
@@ -99,7 +99,7 @@ public class OosController {
             @RequestBody Map<String, Object> body) {
 
         TaskMaster task = taskMasterRepository.findById(taskId)
-                .orElseThrow(() -> new LimsException("Task not found: " + taskId));
+                .orElseThrow(() -> LimsException.notFound("Task not found: " + taskId));
 
         Long approverId = Long.valueOf(body.get("approverId").toString());
         String comment = body.containsKey("comment") ? body.get("comment").toString() : null;

@@ -26,7 +26,7 @@ public class StorageService {
 
     public StorageLocation getLocation(Long id) {
         return storageLocationRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Storage location not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Storage location not found: " + id));
     }
 
     @Transactional
@@ -81,7 +81,7 @@ public class StorageService {
     @Transactional
     public ContainerStorage moveContainer(Long containerId, Long newLocationId, Long userId, String reason) {
         ContainerStorage current = containerStorageRepository.findByContainerId(containerId)
-                .orElseThrow(() -> new LimsException("Container not currently placed"));
+                .orElseThrow(() -> LimsException.notFound("Container not currently placed"));
         StorageLocation newLocation = getLocation(newLocationId);
         AppUser user = appUserRepository.findById(userId).orElse(null);
 
@@ -122,7 +122,7 @@ public class StorageService {
     @Transactional
     public StorageViolation resolveViolation(Long id, Long userId) {
         StorageViolation violation = storageViolationRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Violation not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Violation not found: " + id));
         AppUser user = appUserRepository.findById(userId).orElse(null);
         violation.setStatus("RESOLVED");
         violation.setResolvedAt(LocalDateTime.now());

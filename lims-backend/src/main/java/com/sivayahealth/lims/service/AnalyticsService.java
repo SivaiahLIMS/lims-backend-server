@@ -80,7 +80,7 @@ public class AnalyticsService {
     @Transactional
     public PredictiveAlert acknowledgePredictiveAlert(Long id, Long userId) {
         PredictiveAlert alert = predictiveAlertRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Predictive alert not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Predictive alert not found: " + id));
         AppUser user = appUserRepository.findById(userId).orElse(null);
         alert.setStatus("ACKNOWLEDGED");
         alert.setAcknowledgedBy(user);

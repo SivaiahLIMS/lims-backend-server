@@ -40,7 +40,7 @@ public class ContainerController {
     @Operation(summary = "Get container by ID")
     public ChemicalContainer getContainer(@PathVariable Long id) {
         return containerRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Container not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Container not found: " + id));
     }
 
     @PostMapping
@@ -74,7 +74,7 @@ public class ContainerController {
         Long userId = body.containsKey("userId") ? Long.valueOf(body.get("userId").toString()) : null;
 
         ChemicalContainer container = containerRepository.findById(containerId)
-                .orElseThrow(() -> new LimsException("Container not found: " + containerId));
+                .orElseThrow(() -> LimsException.notFound("Container not found: " + containerId));
         AppUser user = userId != null ? appUserRepository.findById(userId).orElse(null) : null;
 
         ChemicalContainerReservation reservation = ChemicalContainerReservation.builder()
@@ -101,7 +101,7 @@ public class ContainerController {
             @RequestHeader("X-Branch-Id") Long branchId,
             @RequestBody Map<String, Object> body) {
         ChemicalContainerReservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new LimsException("Reservation not found: " + id));
+                .orElseThrow(() -> LimsException.notFound("Reservation not found: " + id));
 
         Long userId = body.containsKey("userId") ? Long.valueOf(body.get("userId").toString()) : null;
         BigDecimal consumedQty = body.containsKey("consumedQty")
