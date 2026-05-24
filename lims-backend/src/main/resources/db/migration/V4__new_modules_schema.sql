@@ -356,6 +356,7 @@ CREATE TABLE IF NOT EXISTS instrument_reading (
 -- ==========================================
 
 CREATE TABLE IF NOT EXISTS document_version (
+<<<<<<< HEAD
   id               BIGSERIAL PRIMARY KEY,
   tenant_id        BIGINT NOT NULL REFERENCES tenant(id),
   branch_id        BIGINT NOT NULL REFERENCES branch(id),
@@ -371,6 +372,37 @@ CREATE TABLE IF NOT EXISTS document_version (
   approved_by      BIGINT REFERENCES app_user(id),
   approved_at      TIMESTAMP,
   published_at     TIMESTAMP,
+=======
+  id                BIGSERIAL PRIMARY KEY,
+  tenant_id         BIGINT NOT NULL REFERENCES tenant(id),
+  branch_id         BIGINT NOT NULL REFERENCES branch(id),
+  document_id       BIGINT NOT NULL REFERENCES document_master(id),
+  version_no        INT NOT NULL,
+  lifecycle_state   VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
+  -- Original filename stored for display
+  original_filename VARCHAR(300),
+  -- Supabase Storage path: {tenantId}/{documentId}/v{versionNo}/{filename}
+  storage_path      VARCHAR(500),
+  -- Long-lived signed URL for download/audit access
+  file_url          VARCHAR(1000),
+  file_size_bytes   BIGINT,
+  -- Upload audit
+  uploaded_at       TIMESTAMP NOT NULL DEFAULT NOW(),
+  uploaded_by       BIGINT REFERENCES app_user(id),
+  -- Review audit
+  reviewed_by       BIGINT REFERENCES app_user(id),
+  reviewed_at       TIMESTAMP,
+  review_comment    TEXT,
+  -- Approval audit
+  approved_by       BIGINT REFERENCES app_user(id),
+  approved_at       TIMESTAMP,
+  -- Publish audit
+  published_at      TIMESTAMP,
+  published_by      BIGINT REFERENCES app_user(id),
+  -- Retire audit
+  retired_at        TIMESTAMP,
+  retired_by        BIGINT REFERENCES app_user(id),
+>>>>>>> origin/main
   UNIQUE (document_id, version_no)
 );
 

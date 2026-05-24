@@ -25,7 +25,11 @@ public class DocumentMaster {
     @Column(nullable = false)
     private Integer version;
 
+<<<<<<< HEAD
     @Column(name = "file_id", nullable = false)
+=======
+    @Column(name = "file_id")
+>>>>>>> origin/main
     private Long fileId;
 
     @Column(nullable = false, length = 20)

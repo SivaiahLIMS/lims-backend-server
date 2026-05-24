@@ -42,9 +42,19 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/auth/**",
                     "/actuator/health",
+<<<<<<< HEAD
                     "/swagger-ui/**",
                     "/v3/api-docs/**"
                 ).permitAll()
+=======
+                    "/actuator/health/**",
+                    "/actuator/info",
+                    "/actuator/prometheus",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
+>>>>>>> origin/main
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

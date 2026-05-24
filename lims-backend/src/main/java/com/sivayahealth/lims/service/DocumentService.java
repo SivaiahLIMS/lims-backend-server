@@ -2,12 +2,31 @@ package com.sivayahealth.lims.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+<<<<<<< HEAD
 import com.sivayahealth.lims.entity.*;
 import com.sivayahealth.lims.exception.LimsException;
 import com.sivayahealth.lims.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+=======
+import com.sivayahealth.lims.config.MetricsConfig;
+import com.sivayahealth.lims.entity.*;
+import com.sivayahealth.lims.exception.LimsException;
+import com.sivayahealth.lims.repository.*;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
+>>>>>>> origin/main
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,6 +38,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DocumentService {
 
+<<<<<<< HEAD
+=======
+    private static final Logger log = LogManager.getLogger(DocumentService.class);
+
+>>>>>>> origin/main
     private final DocumentMasterRepository documentRepository;
     private final DocumentHistoryRepository documentHistoryRepository;
     private final DocumentParsedJsonRepository parsedJsonRepository;
@@ -28,7 +52,23 @@ public class DocumentService {
     private final AppUserRepository userRepository;
     private final AuditService auditService;
     private final DocxParserService docxParserService;
+<<<<<<< HEAD
     private final ObjectMapper objectMapper;
+=======
+    private final GcsStorageService gcsStorageService;
+    private final ObjectMapper objectMapper;
+    private final RestClient restClient;
+    private final Counter documentUploadCounter;
+    private final Counter documentPublishedCounter;
+    private final Counter documentRetiredCounter;
+    private final Timer gcsUploadTimer;
+
+    @Value("${supabase.url}")
+    private String supabaseUrl;
+
+    @Value("${supabase.anon-key}")
+    private String supabaseAnonKey;
+>>>>>>> origin/main
 
     /**
      * Upload a DOCX file for a document master.
@@ -68,6 +108,40 @@ public class DocumentService {
         schemaJson.put("fieldCount",  parsed.fields().size());
         schemaJson.put("formulaCount", parsed.formulas().size());
 
+<<<<<<< HEAD
+=======
+        // Upload DOCX to Google Cloud Storage and record metrics
+        String storagePath = null;
+        String fileUrl = null;
+        Long fileSizeBytes = null;
+        try {
+            byte[] fileBytes = file.getBytes();
+            String safeFilename = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_");
+            String gcsPath = tenantId + "/" + documentId + "/v" + nextVersion + "/" + safeFilename;
+            String mimeType = file.getContentType() != null ? file.getContentType() : "application/octet-stream";
+
+            GcsStorageService.UploadResult result = gcsUploadTimer.recordCallable(
+                    () -> gcsStorageService.upload(fileBytes, gcsPath, mimeType, 365 * 10)
+            );
+            storagePath   = result.storagePath();
+            fileUrl       = result.signedUrl();
+            fileSizeBytes = result.fileSizeBytes();
+
+            log.info("GCS upload complete: path={} size={}", storagePath, fileSizeBytes);
+            documentUploadCounter.increment();
+
+            // Notify Supabase audit trail asynchronously (non-blocking, non-fatal)
+            notifySupabaseUploadAudit(tenantId, branchId, documentId, nextVersion,
+                    uploadedById, uploader, file.getOriginalFilename(),
+                    storagePath, fileUrl, fileBytes.length, mimeType);
+
+        } catch (Exception e) {
+            log.warn("GCS upload failed for document {}: {}", documentId, e.getMessage());
+            auditService.log(tenantId, uploadedById, "DocumentVersion", null,
+                    "UPLOAD_STORAGE_FAILED", null, e.getMessage());
+        }
+
+>>>>>>> origin/main
         // Save version record
         DocumentVersion version = DocumentVersion.builder()
                 .tenantId(tenantId)
@@ -75,7 +149,14 @@ public class DocumentService {
                 .document(doc)
                 .versionNo(nextVersion)
                 .lifecycleState("DRAFT")
+<<<<<<< HEAD
                 .filePath(file.getOriginalFilename())
+=======
+                .originalFilename(file.getOriginalFilename())
+                .storagePath(storagePath)
+                .fileUrl(fileUrl)
+                .fileSizeBytes(fileSizeBytes)
+>>>>>>> origin/main
                 .uploadedAt(LocalDateTime.now())
                 .uploadedBy(uploader)
                 .build();
@@ -101,7 +182,15 @@ public class DocumentService {
         DocumentVersion version = getVersion(documentId, versionNo);
         requireState(version, "DRAFT");
         version.setLifecycleState("UNDER_REVIEW");
+<<<<<<< HEAD
         return documentVersionRepository.save(version);
+=======
+        DocumentVersion saved = documentVersionRepository.save(version);
+        auditService.log(version.getTenantId(), userId, "DocumentVersion", saved.getId(),
+                "SUBMIT_FOR_REVIEW", "DRAFT", "UNDER_REVIEW");
+        insertFileAudit(version, "SUBMITTED_FOR_REVIEW", userId);
+        return saved;
+>>>>>>> origin/main
     }
 
     /** Lifecycle: UNDER_REVIEW → APPROVED */
@@ -114,7 +203,15 @@ public class DocumentService {
         version.setReviewedBy(reviewer);
         version.setReviewedAt(LocalDateTime.now());
         version.setReviewComment(comment);
+<<<<<<< HEAD
         return documentVersionRepository.save(version);
+=======
+        DocumentVersion saved = documentVersionRepository.save(version);
+        auditService.log(version.getTenantId(), reviewerId, "DocumentVersion", saved.getId(),
+                "APPROVE", "UNDER_REVIEW", "APPROVED");
+        insertFileAudit(version, "APPROVED", reviewerId);
+        return saved;
+>>>>>>> origin/main
     }
 
     /** Lifecycle: APPROVED → PUBLISHED */
@@ -122,20 +219,55 @@ public class DocumentService {
     public DocumentVersion publishVersion(Long documentId, int versionNo, Long userId) {
         DocumentVersion version = getVersion(documentId, versionNo);
         requireState(version, "APPROVED");
+<<<<<<< HEAD
         AppUser approver = userRepository.findById(userId).orElse(null);
         version.setLifecycleState("PUBLISHED");
         version.setApprovedBy(approver);
         version.setApprovedAt(LocalDateTime.now());
         version.setPublishedAt(LocalDateTime.now());
         return documentVersionRepository.save(version);
+=======
+        AppUser publisher = userRepository.findById(userId).orElse(null);
+        version.setLifecycleState("PUBLISHED");
+        version.setApprovedBy(publisher);
+        version.setApprovedAt(LocalDateTime.now());
+        version.setPublishedAt(LocalDateTime.now());
+        version.setPublishedBy(publisher);
+        DocumentVersion saved = documentVersionRepository.save(version);
+        auditService.log(version.getTenantId(), userId, "DocumentVersion", saved.getId(),
+                "PUBLISH", "APPROVED", "PUBLISHED");
+        insertFileAudit(version, "PUBLISHED", userId);
+        documentPublishedCounter.increment();
+        log.info("Document version published: documentId={} version={} by userId={}",
+                documentId, versionNo, userId);
+        return saved;
+>>>>>>> origin/main
     }
 
     /** Lifecycle: PUBLISHED → RETIRED */
     @Transactional
+<<<<<<< HEAD
     public DocumentVersion retireVersion(Long documentId, int versionNo) {
         DocumentVersion version = getVersion(documentId, versionNo);
         version.setLifecycleState("RETIRED");
         return documentVersionRepository.save(version);
+=======
+    public DocumentVersion retireVersion(Long documentId, int versionNo, Long userId) {
+        DocumentVersion version = getVersion(documentId, versionNo);
+        requireState(version, "PUBLISHED");
+        AppUser retirer = userRepository.findById(userId).orElse(null);
+        version.setLifecycleState("RETIRED");
+        version.setRetiredAt(LocalDateTime.now());
+        version.setRetiredBy(retirer);
+        DocumentVersion saved = documentVersionRepository.save(version);
+        auditService.log(version.getTenantId(), userId, "DocumentVersion", saved.getId(),
+                "RETIRE", "PUBLISHED", "RETIRED");
+        insertFileAudit(version, "RETIRED", userId);
+        documentRetiredCounter.increment();
+        log.info("Document version retired: documentId={} version={} by userId={}",
+                documentId, versionNo, userId);
+        return saved;
+>>>>>>> origin/main
     }
 
     @Transactional
@@ -209,6 +341,69 @@ public class DocumentService {
 
     // ---- helpers ----
 
+<<<<<<< HEAD
+=======
+    private void notifySupabaseUploadAudit(Long tenantId, Long branchId, Long documentId,
+                                            int versionNo, Long uploadedById, AppUser uploader,
+                                            String originalFilename, String storagePath,
+                                            String fileUrl, long fileSizeBytes, String mimeType) {
+        try {
+            MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+            form.add("tenantId",         tenantId.toString());
+            form.add("branchId",         branchId.toString());
+            form.add("documentId",       documentId.toString());
+            form.add("versionNo",        String.valueOf(versionNo));
+            form.add("action",           "UPLOADED");
+            form.add("performedById",    uploadedById.toString());
+            if (uploader != null)        form.add("performedByName", uploader.getUsername());
+            form.add("lifecycleState",   "DRAFT");
+            form.add("fileUrl",          fileUrl != null ? fileUrl : "");
+            form.add("storagePath",      storagePath != null ? storagePath : "");
+            form.add("originalFilename", originalFilename != null ? originalFilename : "");
+            form.add("fileSizeBytes",    String.valueOf(fileSizeBytes));
+            form.add("mimeType",         mimeType);
+
+            restClient.post()
+                    .uri(supabaseUrl + "/functions/v1/document-lifecycle-audit")
+                    .header("Authorization", "Bearer " + supabaseAnonKey)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(form)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            log.warn("Supabase upload audit notification failed: {}", e.getMessage());
+        }
+    }
+
+    private void insertFileAudit(DocumentVersion version, String action, Long performedById) {
+        try {
+            AppUser performer = userRepository.findById(performedById).orElse(null);
+            String performerName = performer != null ? performer.getUsername() : null;
+            MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+            form.add("tenantId",         version.getTenantId().toString());
+            form.add("branchId",         version.getBranchId().toString());
+            form.add("documentId",       version.getDocument().getId().toString());
+            form.add("versionNo",        String.valueOf(version.getVersionNo()));
+            form.add("action",           action);
+            form.add("performedById",    performedById.toString());
+            if (performerName != null)   form.add("performedByName", performerName);
+            form.add("lifecycleState",   version.getLifecycleState());
+            if (version.getFileUrl() != null)     form.add("fileUrl",     version.getFileUrl());
+            if (version.getStoragePath() != null) form.add("storagePath", version.getStoragePath());
+
+            restClient.post()
+                    .uri(supabaseUrl + "/functions/v1/document-lifecycle-audit")
+                    .header("Authorization", "Bearer " + supabaseAnonKey)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(form)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            // Audit failure is non-fatal; the main transaction continues
+        }
+    }
+
+>>>>>>> origin/main
     private DocumentVersion getVersion(Long documentId, int versionNo) {
         return documentVersionRepository.findByDocument_IdAndVersionNo(documentId, versionNo)
                 .orElseThrow(() -> LimsException.notFound("Version " + versionNo + " not found for document " + documentId));
