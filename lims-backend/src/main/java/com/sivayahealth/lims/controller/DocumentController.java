@@ -62,7 +62,7 @@ public class DocumentController {
     public ResponseEntity<DocumentVersion> uploadDocx(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 documentService.uploadDocxVersion(id, u.getTenantId(), branchId, file, u.getUser().getId())

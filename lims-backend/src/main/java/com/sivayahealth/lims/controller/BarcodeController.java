@@ -37,7 +37,7 @@ public class BarcodeController {
     @Operation(summary = "Resolve storage location by barcode/code")
     public StorageLocation scanLocation(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, String> body) {
         return barcodeService.scanLocation(tenantId, branchId, body.get("barcodeValue"));
     }
@@ -46,7 +46,7 @@ public class BarcodeController {
     @Operation(summary = "Universal scan — resolves container, instrument, or location")
     public Map<String, Object> scanAny(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, String> body) {
         return barcodeService.scanAny(tenantId, branchId, body.get("barcodeValue"));
     }

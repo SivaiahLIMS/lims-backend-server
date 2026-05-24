@@ -27,7 +27,7 @@ public class OmsController {
     @PreAuthorize("hasAuthority('ORDER_VIEW')")
     @Operation(summary = "Get purchase orders")
     public ResponseEntity<List<PurchaseOrder>> getOrders(
-            @RequestParam Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.ok(omsService.getPurchaseOrders(u.getTenantId(), branchId));
     }
@@ -61,7 +61,7 @@ public class OmsController {
     @PreAuthorize("hasAuthority('GRN_VIEW')")
     @Operation(summary = "Get goods receipts")
     public ResponseEntity<List<GoodsReceipt>> getGrns(
-            @RequestParam Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.ok(omsService.getGoodsReceipts(u.getTenantId(), branchId));
     }

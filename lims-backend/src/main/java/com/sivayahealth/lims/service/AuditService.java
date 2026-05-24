@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,6 +40,7 @@ public class AuditService {
                 .action(action)
                 .oldValue(oldValue)
                 .newValue(newValue)
+                .createdAt(LocalDateTime.now())
                 .build();
         auditLogRepository.save(log);
     }

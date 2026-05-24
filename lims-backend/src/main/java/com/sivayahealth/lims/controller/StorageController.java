@@ -23,7 +23,7 @@ public class StorageController {
     @Operation(summary = "List all storage locations")
     public List<StorageLocation> getLocations(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId) {
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId) {
         return storageService.getLocations(tenantId, branchId);
     }
 
@@ -37,7 +37,7 @@ public class StorageController {
     @Operation(summary = "Create storage location")
     public ResponseEntity<StorageLocation> createLocation(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody StorageLocation location) {
         location.setTenantId(tenantId);
         location.setBranchId(branchId);
@@ -81,7 +81,7 @@ public class StorageController {
     @Operation(summary = "List storage violations")
     public List<StorageViolation> getViolations(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false, defaultValue = "false") boolean openOnly) {
         return openOnly
                 ? storageService.getOpenViolations(tenantId, branchId)
@@ -92,7 +92,7 @@ public class StorageController {
     @Operation(summary = "Create storage violation")
     public ResponseEntity<StorageViolation> createViolation(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody StorageViolation violation) {
         violation.setTenantId(tenantId);
         violation.setBranchId(branchId);

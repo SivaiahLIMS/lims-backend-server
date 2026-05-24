@@ -23,7 +23,7 @@ public class TaskController {
     @Operation(summary = "List all tasks")
     public List<TaskMaster> getTasks(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false) String status) {
         return status != null
                 ? taskService.getTasksByStatus(tenantId, branchId, status)
@@ -46,7 +46,7 @@ public class TaskController {
     @Operation(summary = "Create a new task")
     public ResponseEntity<TaskMaster> createTask(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody TaskMaster task) {
         task.setTenantId(tenantId);
         task.setBranchId(branchId);

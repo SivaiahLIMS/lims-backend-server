@@ -1,5 +1,6 @@
 package com.sivayahealth.lims.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -12,7 +13,9 @@ public class AuditLog {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
+    @JoinColumn(name = "tenant_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
     private Tenant tenant;
 
     @ManyToOne(fetch = FetchType.LAZY)

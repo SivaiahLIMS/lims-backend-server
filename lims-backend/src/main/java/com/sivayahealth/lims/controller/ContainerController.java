@@ -29,7 +29,7 @@ public class ContainerController {
     @Operation(summary = "List all chemical containers")
     public List<ChemicalContainer> getContainers(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false) String status) {
         return status != null
                 ? containerRepository.findByTenantIdAndBranchIdAndStatus(tenantId, branchId, status)
@@ -47,7 +47,7 @@ public class ContainerController {
     @Operation(summary = "Create a new chemical container")
     public ResponseEntity<ChemicalContainer> createContainer(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody ChemicalContainer container) {
         container.setTenantId(tenantId);
         container.setBranchId(branchId);
@@ -58,7 +58,7 @@ public class ContainerController {
     @Operation(summary = "FEFO-based container selection for a chemical")
     public List<ChemicalContainer> fefoSelect(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam Long chemicalId) {
         return containerRepository.findAvailableByChemicalIdOrderByFEFO(tenantId, branchId, chemicalId);
     }
@@ -67,7 +67,7 @@ public class ContainerController {
     @Operation(summary = "Reserve a container (FEFO-based)")
     public ResponseEntity<ChemicalContainerReservation> reserveContainer(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, Object> body) {
         Long containerId = Long.valueOf(body.get("containerId").toString());
         BigDecimal qty = new BigDecimal(body.get("reservedQty").toString());
@@ -98,7 +98,7 @@ public class ContainerController {
     public ResponseEntity<DocumentChemicalConsumption> convertReservation(
             @PathVariable Long id,
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, Object> body) {
         ChemicalContainerReservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> LimsException.notFound("Reservation not found: " + id));

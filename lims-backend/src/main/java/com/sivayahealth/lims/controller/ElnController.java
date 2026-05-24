@@ -22,7 +22,7 @@ public class ElnController {
     @Operation(summary = "List ELN entries")
     public List<ElnEntry> getEntries(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false) Long worksheetId) {
         return worksheetId != null
                 ? elnService.getEntriesByWorksheet(worksheetId)
@@ -39,7 +39,7 @@ public class ElnController {
     @Operation(summary = "Create ELN entry")
     public ResponseEntity<ElnEntry> createEntry(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody ElnEntry entry) {
         entry.setTenantId(tenantId);
         entry.setBranchId(branchId);

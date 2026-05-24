@@ -47,7 +47,7 @@ public class SampleController {
     @PreAuthorize("hasAuthority('SAMPLE_VIEW')")
     @Operation(summary = "Get samples for branch")
     public ResponseEntity<List<Sample>> getSamples(
-            @RequestParam Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.ok(sampleService.getSamples(u.getTenantId(), branchId));
     }
@@ -95,7 +95,7 @@ public class SampleController {
     @PreAuthorize("hasAuthority('COA_GENERATE')")
     @Operation(summary = "Generate COA for a sample")
     public ResponseEntity<Coa> generateCoa(@PathVariable Long sampleId,
-                                            @RequestParam Long branchId,
+                                           @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
                                             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 sampleService.generateCoa(sampleId, u.getTenantId(), branchId, u.getUser().getId())

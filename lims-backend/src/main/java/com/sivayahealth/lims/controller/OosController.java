@@ -28,7 +28,7 @@ public class OosController {
     @Operation(summary = "List all OOS test results")
     public List<DocumentTestResult> getOosResults(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId) {
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId) {
         return documentTestResultRepository.findByTenantIdAndBranchIdAndOosTrue(tenantId, branchId);
     }
 
@@ -43,7 +43,7 @@ public class OosController {
     public ResponseEntity<DocumentTestResult> investigate(
             @PathVariable Long testResultId,
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, Object> body) {
 
         DocumentTestResult result = documentTestResultRepository.findById(testResultId)
@@ -95,7 +95,7 @@ public class OosController {
     public ResponseEntity<TaskMaster> approveInvestigation(
             @PathVariable Long taskId,
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, Object> body) {
 
         TaskMaster task = taskMasterRepository.findById(taskId)

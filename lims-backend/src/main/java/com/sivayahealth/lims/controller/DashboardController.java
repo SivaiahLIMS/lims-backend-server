@@ -24,7 +24,7 @@ public class DashboardController {
     @PreAuthorize("hasAnyAuthority('WIDGET_CRITICAL_ALERTS','WIDGET_WORKLOAD','WIDGET_LOW_STOCK','WIDGET_CALIBRATION_DUE','WIDGET_OOS','WIDGET_EXECUTIVE_KPI')")
     @Operation(summary = "Get dashboard widgets data")
     public ResponseEntity<Map<String, Object>> getWidgets(
-            @RequestParam(required = false) Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         Long bId = branchId != null ? branchId : 0L;
         return ResponseEntity.ok(dashboardService.getWidgets(u.getTenantId(), bId));
@@ -33,7 +33,7 @@ public class DashboardController {
     @GetMapping("/summary")
     @Operation(summary = "Get full dashboard summary")
     public ResponseEntity<Map<String, Object>> getSummary(
-            @RequestParam(required = false) Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         Long bId = branchId != null ? branchId : 0L;
         return ResponseEntity.ok(dashboardService.getDashboardData(u.getTenantId(), bId));

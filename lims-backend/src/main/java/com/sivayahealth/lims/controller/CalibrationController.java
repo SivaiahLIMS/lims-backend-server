@@ -29,7 +29,7 @@ public class CalibrationController {
     @Operation(summary = "List calibration tasks")
     public List<CalibrationTask> getCalibrations(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false) String status) {
         return status != null
                 ? calibrationTaskRepository.findByTenantIdAndBranchIdAndStatus(tenantId, branchId, status)
@@ -47,7 +47,7 @@ public class CalibrationController {
     @Operation(summary = "Create a calibration task")
     public ResponseEntity<CalibrationTask> createCalibration(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, Object> body) {
         Long instrumentId = Long.valueOf(body.get("instrumentId").toString());
         Long createdById = body.containsKey("createdById") ? Long.valueOf(body.get("createdById").toString()) : null;
@@ -81,7 +81,7 @@ public class CalibrationController {
     public ResponseEntity<CalibrationTask> completeCalibration(
             @PathVariable Long id,
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestBody Map<String, Object> body) {
         CalibrationTask task = calibrationTaskRepository.findById(id)
                 .orElseThrow(() -> LimsException.notFound("Calibration task not found: " + id));

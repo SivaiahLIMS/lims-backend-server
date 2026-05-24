@@ -25,7 +25,7 @@ public class AnalyticsController {
     public Map<String, Object> getOosTrend(
             @PathVariable Long id,
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value =  "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return analyticsService.getOosTrend(tenantId, branchId, from, to);
@@ -44,7 +44,7 @@ public class AnalyticsController {
     @Operation(summary = "Get predictive alerts")
     public List<PredictiveAlert> getPredictiveAlerts(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @RequestParam(required = false, defaultValue = "false") boolean openOnly) {
         return openOnly
                 ? analyticsService.getOpenPredictiveAlerts(tenantId, branchId)
@@ -64,7 +64,7 @@ public class AnalyticsController {
     @Operation(summary = "Get task metrics overview")
     public Map<String, Object> getTaskMetrics(
             @RequestHeader("X-Tenant-Id") Long tenantId,
-            @RequestHeader("X-Branch-Id") Long branchId) {
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId) {
         return analyticsService.getTaskMetrics(tenantId, branchId);
     }
 }

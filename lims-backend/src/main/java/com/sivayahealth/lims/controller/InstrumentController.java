@@ -45,7 +45,7 @@ public class InstrumentController {
     @PreAuthorize("hasAuthority('INSTRUMENT_VIEW')")
     @Operation(summary = "List instruments for branch")
     public ResponseEntity<List<InstrumentMaster>> getInstruments(
-            @RequestParam Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.ok(instrumentService.getInstrumentsByBranch(u.getTenantId(), branchId));
     }

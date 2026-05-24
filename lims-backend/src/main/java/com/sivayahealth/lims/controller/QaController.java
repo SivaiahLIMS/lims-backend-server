@@ -28,7 +28,7 @@ public class QaController {
     @PreAuthorize("hasAuthority('DEVIATION_VIEW')")
     @Operation(summary = "Get deviations")
     public ResponseEntity<List<Deviation>> getDeviations(
-            @RequestParam Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.ok(qaService.getDeviations(u.getTenantId(), branchId));
     }
@@ -66,7 +66,7 @@ public class QaController {
     @PreAuthorize("hasAuthority('OOS_VIEW')")
     @Operation(summary = "Get OOS cases")
     public ResponseEntity<List<OosCase>> getOos(
-            @RequestParam Long branchId,
+            @RequestHeader(value = "X-Branch-Id", required = false) Long branchId,
             @AuthenticationPrincipal LimsUserDetails u) {
         return ResponseEntity.ok(qaService.getOosCases(u.getTenantId(), branchId));
     }
